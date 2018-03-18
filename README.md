@@ -118,5 +118,5 @@ git commit -m '说明文件修改'
 把提交的信息推送到github服务器上
 git push -u  lychee master 
 
-更新代码捃命令
+更新代码执行命令
 git pull lychee master
