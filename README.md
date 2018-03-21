@@ -106,8 +106,8 @@ npm run build
 
 =======
 git 使用
-首先在git 网站上新建一个仓库lychee,复制ssh地址进行克隆
-git clone git@github.com:ghostliu/LycheeAdmin.git
+首先在git 网站上新建一个仓库lychee,复制https地址进行克隆
+git clone https://github.com/ghostliu/LycheeAdmin.git
 之后本地就存在一个仓库lychee文件夹，进入lychee文件夹把这个仓库添加远程仓库便于后期提交代码使用
 git remote add lychee git@github.com:ghostliu/LycheeAdmin.git
 git remote -v 可查看本地的git添加的仓库地址
