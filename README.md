@@ -120,3 +120,8 @@ git push -u  lychee master
 
 更新代码执行命令
 git pull lychee master
+
+windows 下启动前台服务报错
+found bindings for the following environments: os x 64-bit with node.js 8.x
+执行如下命令之后再启动
+npm rebuild node-sass 

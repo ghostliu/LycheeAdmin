@@ -62,14 +62,20 @@
           <el-form-item label="产品名称" prop="name">
             <el-input v-model="editForm.name" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="上传者" prop="uploadauthor">
-            <el-input v-model="editForm.uploadauthor" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="上传日期">
-            <el-date-picker type="date" placeholder="选择日期" v-model="editForm.uploadDate"></el-date-picker>
+          <el-form-item label="产品图片" prop="imagePath">
+            <el-upload
+              class="avatar-uploader"
+              action="http://www.lizhi98.pub:8099/api/FileUpload"
+              :show-file-list="false"
+              :limit="1"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+                <img v-if="editForm.imagePath" :src="editForm.imagePath" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </el-form-item>
           <el-form-item label="简介" prop="description">
-            <el-input type="textarea" v-model="editForm.description" :rows="8"></el-input>
+            <el-input type="textarea" v-model="editForm.description" :rows="3"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -84,14 +90,20 @@
           <el-form-item label="产品名称" prop="name">
             <el-input v-model="addForm.name" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="上传者" prop="uploadauthor">
-            <el-input v-model="addForm.uploadauthor" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="上传日期">
-            <el-date-picker type="date" placeholder="选择日期" v-model="addForm.uploadDate"></el-date-picker>
+          <el-form-item label="产品图片" prop="imagePath">
+            <el-upload
+              class="avatar-uploader"
+              action="http://www.lizhi98.pub/api/FileUpload"
+              :show-file-list="false"
+              :limit="1"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload">
+                <img v-if="editForm.imagePath" :src="editForm.imagePath" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </el-form-item>
           <el-form-item label="简介" prop="description">
-            <el-input type="textarea" v-model="addForm.description" :rows="8"></el-input>
+            <el-input type="textarea" v-model="addForm.description" :rows="3"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -110,13 +122,15 @@
   export default{
     data(){
       return {
+        uploadFileServerPath:'http://www.lizhi98.pub:8099/',
         filters: {
           name: ''
         },
         products: [],
-        total: 0,
-        page: 1,
-        limit: 10,
+        uploadUser:'',//当前用户名
+        total: 0,//数量总数
+        page: 1,//当前页
+        limit: 10,//每页显示数量
         loading: false,
         sels: [], //列表选中列
 
@@ -126,9 +140,9 @@
           name: [
             {required: true, message: '请输入产品名称', trigger: 'blur'}
           ],
-          uploadauthor: [
-            {required: true, message: '请输入上传者', trigger: 'blur'}
-          ],
+          /*imagePath: [
+            {required: true, message: '请选择产品图片', trigger: 'blur'}
+          ],*/
           description: [
             {required: true, message: '请输入简介', trigger: 'blur'}
           ]
@@ -136,6 +150,7 @@
         editForm: {
           id: 0,
           name: '',
+          imagePath:'',
           uploadauthor: '',
           uploadDate: '',
           description: ''
@@ -148,9 +163,9 @@
           name: [
             {required: true, message: '请输入产品名称', trigger: 'blur'}
           ],
-          uploadauthor: [
-            {required: true, message: '请输入上传者', trigger: 'blur'}
-          ],
+          /*imagePath: [
+            {required: true, message: '请选择产品图片', trigger: 'blur'}
+          ],*/
           description: [
             {required: true, message: '请输入简介', trigger: 'blur'}
           ]
@@ -169,6 +184,11 @@
         this.search();
       },
       handleSearch(){
+        let user = localStorage.getItem('access-user');
+        if (user) {
+          user = JSON.parse(user);
+          this.uploadUser = user.nickname || '';
+        }
         this.total = 0;
         this.page = 1;
         this.search();
@@ -234,6 +254,8 @@
           if (valid) {
             this.loading = true;
             let para = Object.assign({}, this.editForm);
+            para.uploadDate = new Date(); //上传日期
+            para.uploadauthor = this.uploadUser;//上传用户名
             para.uploadDate = (!para.uploadDate || para.uploadDate == '') ? '' : util.formatDate.format(new Date(para.uploadDate), 'yyyy-MM-dd');
             API.update(para.id, para).then(function (result) {
               that.loading = false;
@@ -272,6 +294,8 @@
           if (valid) {
             that.loading = true;
             let para = Object.assign({}, this.addForm);
+            para.uploadDate = new Date(); //上传日期
+            para.uploadauthor = this.uploadUser;//上传用户名
             para.uploadDate = (!para.uploadDate || para.uploadDate === '') ? '' : util.formatDate.format(new Date(para.uploadDate), 'yyyy-MM-dd');
             API.add(para).then(function (result) {
               that.loading = false;
@@ -320,6 +344,27 @@
         }).catch(() => {
 
         });
+      },
+      handleAvatarSuccess(res, file) {//上传成功后回调
+        debugger;
+        let imgUrl = file.url;
+        let fileNamePath = res.substr(20);
+        let fullPath = this.uploadFileServerPath + res.substr(20);
+        //http://www.lizhi98.pub:8099/UploadFile/201803211618087164.jpg
+        //this.editForm.imagePath = URL.createObjectURL(file.raw);
+        this.editForm.imagePath = fullPath;
+      },
+      beforeAvatarUpload(file) { //图片上传限制条件
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传产品图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传产品图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
       }
     },
     mounted() {
@@ -331,5 +376,28 @@
 <style>
   .demo-table-expand label {
     font-weight: bold;
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 80px;
+    height: 80px;
+    line-height: 80px !important;
+    text-align: center;
+  }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    display: block;
   }
 </style>
