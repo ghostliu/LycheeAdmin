@@ -9,7 +9,7 @@
         <a href="/"><img src="../assets/logotxt.png"></a>
       </div>
       <div class="topbar-title">
-        <span style="font-size: 18px;color: #fff;">后台管理系统</span>
+        <span style="font-size: 18px;color: #fff;">{{systemName}}后台管理系统</span>
       </div>
       <div class="topbar-account topbar-btn">
         <el-dropdown trigger="click">
@@ -66,7 +66,6 @@
         </div>
       </section>
     </el-col>
-
   </el-row>
 </template>
 
@@ -92,6 +91,7 @@
       return {
         defaultActiveIndex: "0",
         nickname: '',
+        systemName: '', 
         collapsed: false,
       }
     },
@@ -135,6 +135,7 @@
         user = JSON.parse(user);
         this.nickname = user.nickname || '';
       }
+      this.systemName = '天通铝业';
     }
   }
 </script>
@@ -165,7 +166,7 @@
       }
       .topbar-logos {
         float: left;
-        width: 120px;
+        /*width: 120px;*/
         line-height: 26px;
       }
       .topbar-logo img, .topbar-logos img {
@@ -237,9 +238,10 @@
         height: 46px;
         line-height: 46px;
       }
-
+      
+      /*子菜单经过*/
       .el-menu-item:hover, .el-submenu .el-menu-item:hover, .el-submenu__title:hover {
-        background-color: #7ed2df;
+        background-color: #3b4050; 
       }
     }
 

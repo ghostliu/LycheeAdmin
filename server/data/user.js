@@ -7,7 +7,7 @@ const Users = [];
 Users.push({
   id: 1,
   username: 'admin', //用户名
-  name: "风车车", //姓名
+  name: "荔枝", //姓名
   password: '123456', //密码
   email: 'test@qq.com', //邮箱
   nickname: '超级管理员', //昵称

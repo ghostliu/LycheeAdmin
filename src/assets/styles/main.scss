@@ -25,8 +25,9 @@ a {
   line-height: 46px;
 }
 
+/*主菜单经过式样*/
 .el-menu-item:hover, .el-submenu .el-menu-item:hover, .el-submenu__title:hover {
-  background-color: #7ed2df;
+  background-color: #00C1DE;
 }
 
 .el-submenu .el-menu-item {
@@ -37,6 +38,7 @@ a {
   background-color: #4A5064
 }
 
+/*主菜单选中式样*/
 .el-submenu .el-menu-item.is-active, .el-menu-item.is-active,
 .el-submenu .el-menu-item.is-active:hover, .el-menu-item.is-active:hover {
   background-color: #00C1DE;
