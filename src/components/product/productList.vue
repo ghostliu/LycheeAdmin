@@ -2,7 +2,7 @@
   <el-row class="warp">
     <el-col :span="24" class="warp-breadcrum">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>
+        <el-breadcrumb-item :to="{ path: '/manage' }"><b>首页</b></el-breadcrumb-item>
         <el-breadcrumb-item>产品管理</el-breadcrumb-item>
         <el-breadcrumb-item>产品列表</el-breadcrumb-item>
       </el-breadcrumb>

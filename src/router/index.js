@@ -12,6 +12,10 @@ import UserList from '@/components/user/list'
 import UserChangePwd from '@/components/user/changepwd'
 import UserProfile from '@/components/user/profile'
 
+import Index from '@/components/frontPage/index'
+import Product from '@/components/frontPage/product'
+import About from '@/components/frontPage/about'
+
 // 懒加载方式，当路由被访问的时候才加载对应组件
 const Login = resolve => require(['@/components/Login'], resolve)
 
@@ -21,12 +25,27 @@ let router = new Router({
 // mode: 'history',
   routes: [
     {
+      path: '/index',
+      name: '前台首页',
+      component: Index
+    },
+    {
+      path: '/product',
+      name: '产品',
+      component: Product
+    },
+    {
+      path: '/about',
+      name: '关于',
+      component: About
+    },
+    {
       path: '/login',
       name: '登录',
       component: Login
     },
     {
-      path: '/',
+      path: '/manage',
       name: 'home',
       component: Home,
       redirect: '/dashboard',
@@ -38,7 +57,7 @@ let router = new Router({
       ]
     },
     {
-      path: '/',
+      path: '/manage',
       component: Home,
       name: '用户管理',
       menuShow: true,
@@ -49,7 +68,7 @@ let router = new Router({
       ]
     },
     {
-      path: '/',
+      path: '/manage',
       component: Home,
       name: '图书管理',
       menuShow: true,
@@ -60,7 +79,7 @@ let router = new Router({
       ]
     },
     {
-      path: '/',
+      path: '/manage',
       component: Home,
       name: '产品管理',
       menuShow: true,
@@ -71,7 +90,7 @@ let router = new Router({
       ]
     },
     {
-      path: '/',
+      path: '/manage',
       component: Home,
       name: '设置',
       menuShow: true,
@@ -86,15 +105,20 @@ let router = new Router({
 
 router.beforeEach((to, from, next) => {
   // console.log('to:' + to.path)
-  if (to.path.startsWith('/login')) {
-    window.localStorage.removeItem('access-user')
+  //前台首页，产品页，关于页无需验证
+  if (to.path.startsWith('/index') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
     next()
   } else {
-    let user = JSON.parse(window.localStorage.getItem('access-user'))
-    if (!user) {
-      next({path: '/login'})
-    } else {
+    if (to.path.startsWith('/login')) {
+      window.localStorage.removeItem('access-user')
       next()
+    } else {
+      let user = JSON.parse(window.localStorage.getItem('access-user'))
+      if (!user) {
+        next({path: '/login'})
+      } else {
+        next()
+      }
     }
   }
 })

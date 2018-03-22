@@ -69,7 +69,7 @@
 //                that.$store.commit('SET_ROUTERS', user.permissions)
 //                that.$router.addRoutes(that.$store.getters.addRouters);
 //                that.$router.options.routes = that.$store.getters.routers;
-                that.$router.push({path: '/'});
+                that.$router.push({path: '/manage'});
               } else {
                 that.$message.error({showClose: true, message: result.errmsg || '登录失败', duration: 2000});
               }
@@ -144,6 +144,7 @@
   }
   .login-2018 .login-2018-body {
     text-align: center;
+    height: 100%;
   }
   .login-2018 .login-2018-topbar .login-2018-site-switch {
       float: right;

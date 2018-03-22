@@ -3,10 +3,10 @@
     <!--头部-->
     <el-col :span="24" class="topbar-wrap">
       <div class="topbar-logo topbar-btn">
-        <a href="/"><img src="../assets/logo.png" style="padding-left:8px;"></a>
+        <a href="/manage"><img src="../assets/logo.png" style="padding-left:8px;"></a>
       </div>
       <div class="topbar-logos" v-show="!collapsed">
-        <a href="/"><img src="../assets/logotxt.png"></a>
+        <a href="/manage"><img src="../assets/logotxt.png"></a>
       </div>
       <div class="topbar-title">
         <span style="font-size: 18px;color: #fff;">{{systemName}}后台管理系统</span>
