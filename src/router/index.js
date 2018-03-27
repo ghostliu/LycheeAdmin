@@ -13,6 +13,7 @@ import UserChangePwd from '@/components/user/changepwd'
 import UserProfile from '@/components/user/profile'
 
 import Index from '@/components/frontPage/index'
+import Main from '@/components/frontPage/main'
 import Product from '@/components/frontPage/product'
 import About from '@/components/frontPage/about'
 
@@ -53,7 +54,7 @@ let router = new Router({
       menuShow: true,
       iconCls: 'iconfont icon-home', // 图标样式class
       children: [
-        {path: '/dashboard', component: Dashboard, name: '首页', menuShow: true}
+        {path: '/dashboard', component: Dashboard, name: '后台首页', menuShow: true}
       ]
     },
     {
@@ -106,6 +107,7 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
   // console.log('to:' + to.path)
   //前台首页，产品页，关于页无需验证
+  console.log(to.path)
   if (to.path.startsWith('/index') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
     next()
   } else {
