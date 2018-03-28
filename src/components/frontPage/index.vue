@@ -11,13 +11,13 @@
                     <nav class="menu">
                         <ul>
                             <li>
-                                <router-link to="/index" tag="a">首页</router-link>
+                                <router-link to="/home/index" tag="a">首页</router-link>
                             </li>
                             <li>
-                                <router-link to="/product" tag="a">产品</router-link>
+                                <router-link to="/product/index" tag="a">产品</router-link>
                             </li>
                             <li>
-                                <router-link to="/about" tag="a">关于</router-link>
+                                <router-link to="/about/index" tag="a">关于</router-link>
                             </li>
                         </ul>
                     </nav>
@@ -31,13 +31,13 @@
                             <h3 style="color:#00FF00">导航</h3>
                             <ul>
                                 <li>
-                                    <router-link to="/index" tag="a">首页</router-link>
+                                    <router-link to="/home/index" tag="a">首页</router-link>
                                 </li>
                                 <li>
-                                    <router-link to="/product" tag="a">产品</router-link>
+                                    <router-link to="/product/index" tag="a">产品</router-link>
                                 </li>
                                 <li>
-                                    <router-link to="/about" tag="a">关于</router-link>
+                                    <router-link to="/about/index" tag="a">关于</router-link>
                                 </li>
                             </ul>
                         </div>

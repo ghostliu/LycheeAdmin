@@ -8,7 +8,7 @@
 
       <ul class="login-2018-link">
               <!-- <a href="//www.lizhi98.pub">首页</a> -->
-          <router-link to="/index" tag="li">首页</router-link>
+          <router-link to="/home/index" tag="li">首页</router-link>
       </ul>
     </div>
     <div class="login-2018-body">

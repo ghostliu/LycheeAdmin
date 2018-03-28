@@ -26,19 +26,39 @@ let router = new Router({
 // mode: 'history',
   routes: [
     {
-      path: '/index',
-      name: '前台首页',
-      component: Index
+      path: '/home',
+      name: 'home',
+      title:'产品列表',
+      component: Index,
+      children:[{
+        path:'index',
+        title:'门户主页',
+        name:'home_index',
+        component:Main
+      }]
     },
     {
       path: '/product',
-      name: '产品',
-      component: Product
+      name: 'product',
+      title:'产品列表',
+      component: Index,
+      children:[{
+        path:'index',
+        title:'产品列表',
+        name:'product_name',
+        component:Product
+      }]
     },
     {
       path: '/about',
-      name: '关于',
-      component: About
+      name: 'about',
+      component: Index,
+      children:[{
+        path:'index',
+        title:'关于',
+        name:'about_index',
+        component:About
+      }]
     },
     {
       path: '/login',
@@ -108,7 +128,7 @@ router.beforeEach((to, from, next) => {
   // console.log('to:' + to.path)
   //前台首页，产品页，关于页无需验证
   console.log(to.path)
-  if (to.path.startsWith('/index') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
+  if (to.path.startsWith('/home') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
     next()
   } else {
     if (to.path.startsWith('/login')) {
