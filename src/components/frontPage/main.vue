@@ -179,7 +179,7 @@
   }
 </script>
 
-<style>
+<style scoped>
 .el-carousel__container {
     height: 450px !important;
 }
