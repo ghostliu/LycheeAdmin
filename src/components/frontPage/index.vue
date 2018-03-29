@@ -103,7 +103,6 @@ a {
 .header-nav {
     background-color: #3f67bf;
     color: #fff;
-    border-top: 10px solid#0acf66;
     padding: 1em 0;
     height: 120px !important;
     position: relative;

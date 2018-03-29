@@ -67,7 +67,7 @@ let router = new Router({
     },
     {
       path: '/manage',
-      name: 'home',
+      name: 'back_home',
       component: Home,
       redirect: '/dashboard',
       leaf: true, // 只有一个节点
