@@ -16,6 +16,7 @@ productController.find = function (req, res) {
   let page = parseInt(req.query.page || 1); //页码（默认第1页）
   let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
   let name = req.query.name || ''; //产品名称
+  let newFlag = req.query.newFlag || false;
   let total = 0;
   let rltProducts = [];
   if (name.length > 0) {
@@ -26,7 +27,25 @@ productController.find = function (req, res) {
     rltProducts = mockProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))
   } else {
     total = _Products.length; //总条数
-    rltProducts = _Products.filter((u, index) => index < limit * page && index >= limit * (page - 1))
+    //是否取最新数据
+    if (newFlag) {
+      let newProducts = _Products.sort((p1,p2) => {
+        let p1Time = new Date(p1.uploadDate).getTime();
+        let p2Time = new Date(p2.uploadDate).getTime();
+        //按时间降序,最新放在最前面
+        if (p1Time > p2Time) {
+          return -1;
+        } else if (p1Time < p2Time){
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      rltProducts = newProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))  
+    } else {
+      rltProducts = _Products.filter((u, index) => index < limit * page && index >= limit * (page - 1))  
+    }
+    
   }
   res.json({
     total: total,

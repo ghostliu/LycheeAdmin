@@ -26,26 +26,26 @@
       </el-col>
     </el-row>
     <el-row type="flex">
-      <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(0,5)" :key="o.productId" :offset="index > 0 ? 1 : 0">
+      <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(0,5)" :key="o.id" :offset="index > 0 ? 1 : 0">
          <el-card :body-style="{ padding: '0px' }">
-            <img :src="o.productImage" class="image">
+            <img :src="staticPath + o.imagePath" class="image">
             <div style="padding: 14px;">
-              <span>{{ o.productName }}</span>
+              <span>{{ o.name }}</span>
               <div class="bottom clearfix">
-                <time class="time">{{ o.uploadTime }}</time>
+                <time class="time">{{ o.uploadDate }}</time>
               </div>
             </div>
           </el-card>
       </el-col>
     </el-row>
     <el-row type="flex">
-      <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(5,10)" :key="o.productId" :offset="index > 0 ? 1 : 0">
+      <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(5,10)" :key="o.id" :offset="index > 0 ? 1 : 0">
          <el-card :body-style="{ padding: '0px' }">
-            <img :src="o.productImage" class="image">
+            <img :src="staticPath + o.imagePath" class="image">
             <div style="padding: 14px;">
-              <span>{{ o.productName }}</span>
+              <span>{{ o.name }}</span>
               <div class="bottom clearfix">
-                <time class="time">{{ o.uploadTime }}</time>
+                <time class="time">{{ o.uploadDate }}</time>
               </div>
             </div>
           </el-card>
@@ -100,6 +100,8 @@
   </div>
 </template>
 <script>
+  import util from '../../common/util'
+  import API from '../../api/api_product';
   export default{
     data(){
       return {
@@ -107,57 +109,7 @@
         staticPath:'../../static/',
         indexPageImage:["photovoltaic1.jpg","photovoltaic2.jpg","photovoltaic3.jpg"],
         //产品列表
-        products:[{
-          productName:'好吃的汉堡',
-          productImage:'../../static/images/forest.png',
-          productId:'123',
-          uploadTime:'2018-03-28 16:58'
-        },{
-          productName:'好吃的汉堡2',
-          productImage:'../../static/images/forest.png',
-          productId:'124',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡3',
-          productImage:'../../static/images/forest.png',
-          productId:'125',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡4',
-          productImage:'../../static/images/forest.png',
-          productId:'126',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡5',
-          productImage:'../../static/images/forest.png',
-          productId:'127',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡6',
-          productImage:'../../static/images/forest.png',
-          productId:'128',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡7',
-          productImage:'../../static/images/forest.png',
-          productId:'129',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡8',
-          productImage:'../../static/images/forest.png',
-          productId:'130',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡9',
-          productImage:'../../static/images/forest.png',
-          productId:'131',
-          uploadTime:'2018-03-28 17:58'
-        },{
-          productName:'好吃的汉堡9',
-          productImage:'../../static/images/forest.png',
-          productId:'132',
-          uploadTime:'2018-03-28 17:58'
-        }],
+        products:[],
         //公司设备
         companyDevice:[{
           deviceName:'机械设备',
@@ -178,7 +130,35 @@
           uploadTime:'2015-03-28 16:58'
         }]
       }
-    }
+    },
+    methods:{
+      getProduct() {
+          //获取产品列表数据
+          let that = this;
+          let params = {
+            page: 1,
+            limit: 10,
+            name: "",
+            newFlag: true,
+          };
+
+          API.findList(params).then(function (result) {
+            if (result && result.products) {
+              //that.total = result.total;
+              that.products = result.products;
+              that.rowCount = result.products.length / 5;
+            }
+          }, function (err) {
+            that.$message.error({showClose: true, message: err.toString(), duration: 2000});
+          }).catch(function (error) {
+            console.log(error);
+            that.$message.error({showClose: true, message: '请求出现异常', duration: 2000});
+          });
+        }
+      },
+      mounted() {
+        this.getProduct();
+      }
   }
 </script>
 

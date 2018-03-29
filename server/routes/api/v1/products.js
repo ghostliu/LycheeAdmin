@@ -8,28 +8,28 @@ var indexRouter = {};
 var userController = require('../../../controllers/user');
 var productController = require('../../../controllers/product');
 
+//返回product的集合
+router.get('/', productController.find);
+
 //先检查登录
 router.use(userController.checkLogin);
 
-//返回book的集合
-router.get('/', productController.find);
-
-//返回指定的book
+//返回指定的product
 router.get('/:id', productController.findById);
 
-//创建book
+//创建product
 router.post('/', productController.create);
 
-//更新book全部信息
+//更新product全部信息
 router.put('/:id', productController.update);
 
-//更新book部分信息
+//更新product部分信息
 router.patch('/:id', productController.patch);
 
 //批量删除
 router.delete('/batch/:ids', productController.deleteBatch);
 
-//删除指定的book
+//删除指定的product
 router.delete('/:id', productController.delete);
 
 

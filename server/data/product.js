@@ -13,7 +13,7 @@ for (let i = 0; i < 100; i++) {
     id: Mock.Random.guid(),
     name: Mock.Random.ctitle(2, 12),
     uploadauthor: Mock.Random.cname(),
-    imagePath:"/test.png",
+    imagePath:"/images/forest.png",
     description: Mock.Random.csentence(180, 500),
     uploadDate: Mock.Random.date()
   }))
