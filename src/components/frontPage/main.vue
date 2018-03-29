@@ -5,7 +5,8 @@
       <el-col :span="24">
         <div>
           <el-carousel :interval="5000" arrow="always" :autoplay="false">
-            <el-carousel-item v-for="item in 3" :key="item">
+            <el-carousel-item v-for="item in indexPageImage" :key="item">
+              <img :src="staticPath + item" alt="产品说明">
             </el-carousel-item>
           </el-carousel>
         </div>
@@ -54,7 +55,7 @@
       <!-- 产品原材料说明 -->
       <el-col :span="8" :offset="4">
           <el-card>
-             <img src="../../assets/images/material.jpg" class="image" alt="原材料"/>
+             <img :src="staticPath + 'material.jpg'" class="image" alt="原材料"/>
           </el-card>
       </el-col>
       <el-col :span="8">
@@ -92,7 +93,7 @@
       <!-- 公司产房 -->
       <el-col class="product_list" :span="24">
         <el-card>
-             <img src="../../assets/images/panorama.jpg" class="image" alt="公司产房" />
+             <img :src="staticPath + 'panorama.jpg'" class="image" alt="公司产房" />
         </el-card>
       </el-col>
     </el-row>
@@ -103,6 +104,8 @@
     data(){
       return {
         msg: '为用户提供简单、方便、安全、实用的产品和解决方案，帮助客户实现低成本、高质量的目标。',
+        staticPath:'../../static/',
+        indexPageImage:["photovoltaic1.jpg","photovoltaic2.jpg","photovoltaic3.jpg"],
         //产品列表
         products:[{
           productName:'好吃的汉堡',
@@ -206,17 +209,13 @@
   margin: 5px 15px;
 }
   
-.el-carousel__item:nth-child(2n) {
+/* .el-carousel__item:nth-child(1) {
     background:url(../../assets/images/photovoltaic1.jpg)no-repeat 0px 0px;
 }
   
-.el-carousel__item:nth-child(2n+1) {
+.el-carousel__item:nth-child(2) {
     background:url(../../assets/images/photovoltaic2.jpg)no-repeat 0px 0px;
-}
-
-.el-carousel__item:nth-child(1) {
-  background:url(../../assets/images/photovoltaic3.jpg)no-repeat 0px 0px;
-}
+} */
 
 .time {
   font-size: 13px;
