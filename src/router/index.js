@@ -127,7 +127,9 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
   // console.log('to:' + to.path)
   //前台首页，产品页，关于页无需验证
-  console.log(to.path)
+  if (to.path == "/") {
+    next({path: '/home/index'})
+  }
   if (to.path.startsWith('/home') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
     next()
   } else {

@@ -3,55 +3,83 @@
  * Created by llz.
  */
 const Mock = require('mockjs');
-const Products = require('../data/product');
+let db = require('../utils/mydbUtils');
+//const Products = require('../data/product');
 let productController = {};
-let _Products = Products;
+let _Products = [];
+
+/**
+ * 查询产品库
+ * @param sql
+ * @param params
+ * @param callBack
+ */
+
+var querysql = function(sql, params, callBack) {
+    db.querySql(sql, params, function(err, rows, fields) {
+        if (err) {
+            console.log('[query] -:' + err);
+            callBack(err);
+            return;
+        }
+        //console.log('[query sql]-:', sql);
+        callBack(err, rows);
+    });
+}
 
 /**
  * 通过产品名称查询，获取产品列表
  * @param req
  * @param res
  */
-productController.find = function (req, res) {
-  let page = parseInt(req.query.page || 1); //页码（默认第1页）
-  let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
-  let name = req.query.name || ''; //产品名称
-  let newFlag = req.query.newFlag || false;
-  let total = 0;
-  let rltProducts = [];
-  if (name.length > 0) {
-    let mockProducts = _Products.filter(product => {
-      return product.name.indexOf(name) > -1;
-    });
-    total = mockProducts.length; //总条数
-    rltProducts = mockProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))
-  } else {
-    total = _Products.length; //总条数
-    //是否取最新数据
-    if (newFlag) {
-      let newProducts = _Products.sort((p1,p2) => {
-        let p1Time = new Date(p1.uploadDate).getTime();
-        let p2Time = new Date(p2.uploadDate).getTime();
-        //按时间降序,最新放在最前面
-        if (p1Time > p2Time) {
-          return -1;
-        } else if (p1Time < p2Time){
-          return 1;
+productController.find = function(req, res) {
+    let page = parseInt(req.query.page || 1); //页码（默认第1页）
+    let limit = parseInt(req.query.limit || 10); //每页显示条数（默认10条）
+    let name = req.query.name || ''; //产品名称
+    let newFlag = req.query.newFlag || false;
+    let total = 0;
+    let rltProducts = [];
+
+    //数据库查询数据
+    let sql = 'SELECT productId as id, productName as name, productImage as imagePath, 1 as uploadauthor, 2 as description, inTime as uploadDate from product';
+    querysql(sql, null, function(err, data) {
+        _Products = data;
+
+        if (name.length > 0) {
+            let mockProducts = _Products.filter(product => {
+                return product.name.indexOf(name) > -1;
+            });
+            total = mockProducts.length; //总条数
+            rltProducts = mockProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))
         } else {
-          return 0;
+            total = _Products.length; //总条数
+            //是否取最新数据
+            if (newFlag) {
+                let newProducts = _Products.sort((p1, p2) => {
+                    let p1Time = new Date(p1.uploadDate).getTime();
+                    let p2Time = new Date(p2.uploadDate).getTime();
+                    //按时间降序,最新放在最前面
+                    if (p1Time > p2Time) {
+                        return -1;
+                    } else if (p1Time < p2Time) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+                rltProducts = newProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))
+            } else {
+                rltProducts = _Products.filter((u, index) => index < limit * page && index >= limit * (page - 1))
+            }
+
         }
-      });
-      rltProducts = newProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))  
-    } else {
-      rltProducts = _Products.filter((u, index) => index < limit * page && index >= limit * (page - 1))  
-    }
-    
-  }
-  res.json({
-    total: total,
-    limit: limit,
-    products: rltProducts
-  })
+
+        res.json({
+            total: total,
+            limit: limit,
+            products: rltProducts
+        })
+    });
 };
 
 /**
@@ -59,15 +87,21 @@ productController.find = function (req, res) {
  * @param req
  * @param res
  */
-productController.findById = function (req, res) {
-  let id = _.trim(req.params.id || '');
-  if (!id) {
-    return res.json({"errcode": 40002, "errmsg": "不合法的参数"});
-  }
-  let book = _.find(_Products, function (b) {
-    return b.id === id;
-  });
-  res.json(book || null)
+productController.findById = function(req, res) {
+    let id = _.trim(req.params.id || '');
+    if (!id) {
+        return res.json({ "errcode": 40002, "errmsg": "不合法的参数" });
+    }
+    console.log("query param id:"+id)
+    let params = {productId:id}
+    let sql = 'SELECT productId as id, productName as name, productImage as imagePath, 1 as uploadauthor, 2 as description, inTime as uploadDate from product';
+    querysql(sql, params, function(err, data) {
+      let product = data;
+      /*let product = _.find(_Products, function(b) {
+          return b.id === id;
+      });*/
+      res.json(product || null)
+    });
 };
 
 /**
@@ -75,21 +109,21 @@ productController.findById = function (req, res) {
  * @param req
  * @param res
  */
-productController.create = function (req, res) {
-  let name = req.body.name;
-  let uploadauthor = req.body.uploadauthor;
-  let imagePath = req.body.imagePath;
-  let description = req.body.description;
-  let uploadDate = req.body.uploadDate;
-  _Products.push({
-    id: Mock.Random.guid(),
-    name: name,
-    uploadauthor: uploadauthor,
-    imagePath: imagePath,
-    description: description,
-    uploadDate: uploadDate
-  });
-  res.json({"errcode": 0, "errmsg": "新增成功"})
+productController.create = function(req, res) {
+    let name = req.body.name;
+    let uploadauthor = req.body.uploadauthor;
+    let imagePath = req.body.imagePath;
+    let description = req.body.description;
+    let uploadDate = req.body.uploadDate;
+    _Products.push({
+        id: Mock.Random.guid(),
+        name: name,
+        uploadauthor: uploadauthor,
+        imagePath: imagePath,
+        description: description,
+        uploadDate: uploadDate
+    });
+    res.json({ "errcode": 0, "errmsg": "新增成功" })
 };
 
 /***
@@ -97,30 +131,30 @@ productController.create = function (req, res) {
  * @param req
  * @param res
  */
-productController.update = function (req, res) {
-  let id = _.trim(req.params.id || '');
-  if (!id) {
-    return res.json({"errcode": 40002, "errmsg": "不合法的参数"});
-  }
-  let name = req.body.name;
-  let uploadauthor = req.body.uploadauthor;
-  let imagePath = req.body.imagePath;
-  let description = req.body.description;
-  let uploadDate = req.body.uploadDate;
+productController.update = function(req, res) {
+    let id = _.trim(req.params.id || '');
+    if (!id) {
+        return res.json({ "errcode": 40002, "errmsg": "不合法的参数" });
+    }
+    let name = req.body.name;
+    let uploadauthor = req.body.uploadauthor;
+    let imagePath = req.body.imagePath;
+    let description = req.body.description;
+    let uploadDate = req.body.uploadDate;
 
-  let i = _.findIndex(_Products, function (u) {
-    return u.id === id
-  })
-  if (i > -1) {
-    _Products[i].name = name;
-    _Products[i].uploadauthor = uploadauthor;
-    _Products[i].imagePath = imagePath;
-    _Products[i].description = description;
-    _Products[i].uploadDate = uploadDate;
-    res.json({"errcode": 0, "errmsg": "修改成功"});
-  } else {
-    res.json({"errcode": 40009, "errmsg": "处理失败"});
-  }
+    let i = _.findIndex(_Products, function(u) {
+        return u.id === id
+    })
+    if (i > -1) {
+        _Products[i].name = name;
+        _Products[i].uploadauthor = uploadauthor;
+        _Products[i].imagePath = imagePath;
+        _Products[i].description = description;
+        _Products[i].uploadDate = uploadDate;
+        res.json({ "errcode": 0, "errmsg": "修改成功" });
+    } else {
+        res.json({ "errcode": 40009, "errmsg": "处理失败" });
+    }
 };
 
 /**
@@ -128,7 +162,7 @@ productController.update = function (req, res) {
  * @param req
  * @param res
  */
-productController.patch = function (req, res) {
+productController.patch = function(req, res) {
 
 };
 
@@ -137,11 +171,11 @@ productController.patch = function (req, res) {
  * @param req
  * @param res
  */
-productController.deleteBatch = function (req, res) {
-  let ids = req.params.ids;
-  ids = ids.split(',');
-  _Products = _Products.filter(b => !ids.includes(b.id))
-  res.json({"errcode": 0, "errmsg": "删除成功"});
+productController.deleteBatch = function(req, res) {
+    let ids = req.params.ids;
+    ids = ids.split(',');
+    _Products = _Products.filter(b => !ids.includes(b.id))
+    res.json({ "errcode": 0, "errmsg": "删除成功" });
 };
 
 /**
@@ -149,20 +183,20 @@ productController.deleteBatch = function (req, res) {
  * @param req
  * @param res
  */
-productController.delete = function (req, res) {
-  let id = _.trim(req.params.id || '');
-  if (!id) {
-    return res.json({"errcode": 40002, "errmsg": "不合法的参数"});
-  }
-  let i = _.findIndex(_Products, function (u) {
-    return u.id === id
-  })
-  if (i > -1) {
-    _Products.splice(i, 1);
-    res.json({"errcode": 0, "errmsg": "删除成功"});
-  } else {
-    res.json({"errcode": 40009, "errmsg": "处理失败"});
-  }
+productController.delete = function(req, res) {
+    let id = _.trim(req.params.id || '');
+    if (!id) {
+        return res.json({ "errcode": 40002, "errmsg": "不合法的参数" });
+    }
+    let i = _.findIndex(_Products, function(u) {
+        return u.id === id
+    })
+    if (i > -1) {
+        _Products.splice(i, 1);
+        res.json({ "errcode": 0, "errmsg": "删除成功" });
+    } else {
+        res.json({ "errcode": 40009, "errmsg": "处理失败" });
+    }
 };
 
 module.exports = productController;

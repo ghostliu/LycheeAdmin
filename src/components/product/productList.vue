@@ -40,7 +40,7 @@
         </el-table-column>
         <el-table-column prop="name" label="产品名称" sortable></el-table-column>
         <el-table-column prop="uploadauthor" label="上传者" width="100" sortable></el-table-column>
-        <el-table-column prop="uploadDate" label="上传日期" width="150" sortable></el-table-column>
+        <el-table-column prop="uploadDate" label="上传日期" width="150" sortable :formatter="dateFormat"></el-table-column>
         <el-table-column label="操作" width="150">
           <template slot-scope="scope">
             <el-button size="small" @click="showEditDialog(scope.$index,scope.row)">编辑</el-button>
@@ -116,6 +116,7 @@
   </el-row>
 </template>
 <script>
+  import moment from 'moment'
   import util from '../../common/util'
   import API from '../../api/api_product';
 
@@ -179,9 +180,13 @@
       }
     },
     methods: {
+      dateFormat(row, column) {
+        return moment(row[column.property]).format('YYYY-MM-DD');
+      },
       handleCurrentChange(val) {
         this.page = val;
         this.search();
+        console.log("产品列表时间"+moment(new Date()).format('YYYY-MM-DD HH:mm:ss a'))
       },
       handleSearch(){
         let user = localStorage.getItem('access-user');

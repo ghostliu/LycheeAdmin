@@ -9,7 +9,7 @@
         <el-row type="flex" v-for="(row, rindex) in rowCount" :key="row" style="padding-bottom: 15px">
             <el-col :span="4" v-for="(o, index) in products.slice(rindex*5,5*(rindex+1))" :key="o.id" :offset="index > 0 ? 1 : 0">
                 <el-card :body-style="{ padding: '0px' }">
-                    <img :src="staticPath + o.imagePath" class="image">
+                    <img :src="staticPath + o.imagePath" class="product_image">
                     <div style="padding: 14px;">
                         <span>{{ o.name }}</span>
                         <div class="bottom clearfix">
@@ -29,7 +29,7 @@
     </div>
 </template>
 <script>
-  import util from '../../common/util'
+  import moment from 'moment'
   import API from '../../api/api_product';
   export default {
     data() {
@@ -57,6 +57,10 @@
               //that.total = result.total;
               that.products = result.products;
               that.rowCount = result.products.length / 5;
+              for (var i = that.products.length - 1; i >= 0; i--) {
+                //格式化时间格式
+                that.products[i].uploadDate = moment(new Date(that.products[i].uploadDate)).format('YYYY-MM-DD');
+              }
             }
           }, function (err) {
             that.$message.error({showClose: true, message: err.toString(), duration: 2000});
@@ -79,8 +83,9 @@
     text-align: center;
 }
 
-.image {
+.product_image {
     width: 100%;
+    height: 197px;
     display: block;
 }
 

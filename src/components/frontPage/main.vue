@@ -28,7 +28,7 @@
     <el-row type="flex">
       <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(0,5)" :key="o.id" :offset="index > 0 ? 1 : 0">
          <el-card :body-style="{ padding: '0px' }">
-            <img :src="staticPath + o.imagePath" class="image">
+            <img :src="staticPath + o.imagePath" class="product_image">
             <div style="padding: 14px;">
               <span>{{ o.name }}</span>
               <div class="bottom clearfix">
@@ -41,7 +41,7 @@
     <el-row type="flex">
       <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(5,10)" :key="o.id" :offset="index > 0 ? 1 : 0">
          <el-card :body-style="{ padding: '0px' }">
-            <img :src="staticPath + o.imagePath" class="image">
+            <img :src="staticPath + o.imagePath" class="product_image">
             <div style="padding: 14px;">
               <span>{{ o.name }}</span>
               <div class="bottom clearfix">
@@ -82,9 +82,6 @@
           <img :src="o.deviceImage" class="image">
           <div style="padding: 14px;">
             <span>{{o.deviceName}}</span>
-            <div class="bottom clearfix">
-              <!-- <time class="time">{{ currentDate }}</time> -->
-            </div>
           </div>
         </el-card>
       </el-col>
@@ -100,7 +97,7 @@
   </div>
 </template>
 <script>
-  import util from '../../common/util'
+  import moment from 'moment'
   import API from '../../api/api_product';
   export default{
     data(){
@@ -144,9 +141,12 @@
 
           API.findList(params).then(function (result) {
             if (result && result.products) {
-              //that.total = result.total;
               that.products = result.products;
               that.rowCount = result.products.length / 5;
+              for (var i = that.products.length - 1; i >= 0; i--) {
+                //格式化时间格式
+                that.products[i].uploadDate = moment(new Date(that.products[i].uploadDate)).format('YYYY-MM-DD');
+              }
             }
           }, function (err) {
             that.$message.error({showClose: true, message: err.toString(), duration: 2000});
@@ -158,6 +158,7 @@
       },
       mounted() {
         this.getProduct();
+        console.log("产品获取时间"+moment(new Date()).format('YYYY-MM-DD HH:mm:ss a'))
       }
   }
 </script>
@@ -210,6 +211,12 @@
 .button {
   padding: 0;
   float: right;
+}
+
+.product_image {
+  width: 100%;
+  height: 197px;
+  display: block;
 }
 
 .image {
