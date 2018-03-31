@@ -31,35 +31,26 @@ let router = new Router({
       title:'产品列表',
       component: Index,
       redirect: '/index',
-      children:[{
-        path:'index',
-        title:'门户主页',
-        name:'home_index',
-        component:Main
-      }]
+      children:[
+        {path:'index', title:'门户主页', name:'home_index', component:Main}
+      ]
     },
     {
       path: '/product',
       name: 'product',
       title:'产品列表',
       component: Index,
-      children:[{
-        path:'index',
-        title:'产品列表',
-        name:'product_name',
-        component:Product
-      }]
+      children:[
+        {path:'index', title:'产品列表', name:'product_name', component:Product }
+      ]
     },
     {
       path: '/about',
       name: 'about',
       component: Index,
-      children:[{
-        path:'index',
-        title:'关于',
-        name:'about_index',
-        component:About
-      }]
+      children:[
+        {path:'index', title:'关于', name:'about_index', component:About }
+      ]
     },
     {
       path: '/login',
@@ -72,7 +63,7 @@ let router = new Router({
       component: Home,
       redirect: '/dashboard',
       leaf: true, // 只有一个节点
-      menuShow: true,
+      menuShow: true, // 菜单是否显示
       iconCls: 'iconfont icon-home', // 图标样式class
       children: [
         {path: '/dashboard', component: Dashboard, name: '后台首页', menuShow: true}
@@ -93,7 +84,7 @@ let router = new Router({
       path: '/manage',
       component: Home,
       name: '图书管理',
-      menuShow: true,
+      menuShow: false, 
       iconCls: 'iconfont icon-books',
       children: [
         {path: '/book/list', component: BookList, name: '图书列表', menuShow: true},

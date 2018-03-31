@@ -9,15 +9,15 @@
     </el-col>
 
     <el-col :span="24" class="warp-main">
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" status-icon :model="form" :rules="rules" label-width="120px">
         <el-form-item label="原密码" prop="oldPwd">
-          <el-input v-model="form.oldPwd"></el-input>
+          <el-input type="password" v-model="form.oldPwd"></el-input>
         </el-form-item>
         <el-form-item label="新密码" prop="newPwd">
-          <el-input v-model="form.newPwd"></el-input>
+          <el-input type="password" v-model="form.newPwd"></el-input>
         </el-form-item>
         <el-form-item label="确认新密码" prop="confirmPwd">
-          <el-input v-model="form.confirmPwd"></el-input>
+          <el-input type="password" v-model="form.confirmPwd"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="default" @click="handleChangepwd">提交</el-button>
@@ -62,7 +62,8 @@
             {required:true,message:"请输入原始密码",trigger:"blur"}
           ],
           newPwd: [
-            {validator:validatorPass,trigger:"blur"}
+            {validator:validatorPass,trigger:"blur"},
+            { min: 3, max: 10, message: '密码长度在 6 到 10 个字符', trigger: 'blur' }
           ],
           confirmPwd: [
             {validator:validatorPass2,trigger:"blur"}

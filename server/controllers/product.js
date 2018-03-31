@@ -4,30 +4,10 @@
  */
 const Mock = require('mockjs');
 let db = require('../utils/mydbUtils');
-//const Products = require('../data/product');
 let productController = {};
 let _Products = [];
 
-/**
- * 查询产品库
- * @param sql
- * @param params
- * @param callBack
- */
-
-var querysql = function(sql, params, callBack) {
-    db.querySql(sql, params, function(err, rows, fields) {
-        if (err) {
-            console.log('[query] -:' + err);
-            callBack(err);
-            return;
-        }
-        //console.log('[query sql]-:', sql);
-        callBack(err, rows);
-    });
-}
-
-var insertOrUpdateSql = function(sql, params, callBack) {
+let insertOrUpdateSql = function(sql, params, callBack) {
     db.insertOrUpdateSql(sql, params, function(err, rows, fields) {
         if (err) {
             console.log('[insert] -:' + err);
@@ -53,15 +33,15 @@ productController.find = function(req, res) {
 
     //数据库查询数据
     let sql = 'SELECT productId as id, productName as name, productImage as imagePath, uploadauthor, description, inTime as uploadDate from product';
-    querysql(sql, null, function(err, data) {
+    insertOrUpdateSql(sql, null, function(err, data) {
         _Products = data;
 
         if (name.length > 0) {
-            let mockProducts = _Products.filter(product => {
+            let products = _Products.filter(product => {
                 return product.name.indexOf(name) > -1;
             });
-            total = mockProducts.length; //总条数
-            rltProducts = mockProducts.filter((u, index) => index < limit * page && index >= limit * (page - 1))
+            total = products.length; //总条数
+            rltProducts = products.filter((u, index) => index < limit * page && index >= limit * (page - 1))
         } else {
             total = _Products.length; //总条数
             //是否取最新数据
@@ -105,12 +85,9 @@ productController.findById = function(req, res) {
     }
     console.log("query param id:"+id)
     let params = {productId:id}
-    let sql = 'SELECT productId as id, productName as name, productImage as imagePath, uploadauthor, description, inTime as uploadDate from product';
-    querysql(sql, params, function(err, data) {
+    let sql = 'SELECT productId as id, productName as name, productImage as imagePath, uploadauthor, description, inTime as uploadDate from product where productId = ?';
+    insertOrUpdateSql(sql, [id], function(err, data) {
       let product = data;
-      /*let product = _.find(_Products, function(b) {
-          return b.id === id;
-      });*/
       res.json(product || null)
     });
 };
@@ -132,8 +109,6 @@ productController.create = function(req, res) {
     //可以设置插入多条数据,[[id,name,sex],[id,name,sex]]
 
     insertOrUpdateSql(insertsql, [values], function(err, data) {
-        //console.log(data);
-        //console.log(err);
         if (err == null) {
             res.json({ "errcode": 0, "errmsg": "新增成功" });
         } else {
@@ -161,8 +136,6 @@ productController.update = function(req, res) {
     let updateSql = 'update product set productName=?,productImage=?,inTime=?,uploadauthor=?,description=? where productId = ?'
     let values = [name,imagePath,uploadDate,uploadauthor,description,id]
     insertOrUpdateSql(updateSql, values, function(err, data) {
-        console.log(data);
-        console.log(err);
         if (err == null) {
             res.json({ "errcode": 0, "errmsg": "更新成功" })
         } else {
@@ -195,10 +168,7 @@ productController.deleteBatch = function(req, res) {
     }
     deleteSql = deleteSql.substr(0, deleteSql.length - 3);
     console.log('[delete sql]-:'+deleteSql)
-
-    querysql(deleteSql, null,function(err, data) {
-        console.log(data);
-        console.log(err);
+    insertOrUpdateSql(deleteSql, null,function(err, data) {
         if (err == null) {
             res.json({ "errcode": 0, "errmsg": "删除成功" })
         } else {
@@ -219,10 +189,7 @@ productController.delete = function(req, res) {
     }
 
     let deleteSql = 'delete from product where productId = ?'
-    
     insertOrUpdateSql(deleteSql, [id], function(err, data) {
-        console.log(data);
-        console.log(err);
         if (err == null) {
             res.json({ "errcode": 0, "errmsg": "删除成功" })
         } else {

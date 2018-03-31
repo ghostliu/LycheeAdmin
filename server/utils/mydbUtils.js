@@ -24,11 +24,12 @@ var querySql = function(sql, params, callback) {
             callback(err, null);
             return;
         };
-
+        console.log('[query sql operation success!]');
         callback(null, rows, fields);
     });
 }
 
+//存储过程执行
 var executeProcedure = function(procedure,params,callback) {
     
 }
@@ -46,7 +47,7 @@ var insertOrUpdateSql = function(sql, params, callback) {
             callback(err, null);
             return;
         };
-        console.log('[product insert success!]');
+        console.log('[insertorupdate sql operation success!]');
         callback(null, rows, fields);
     });
 }

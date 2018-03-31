@@ -38,8 +38,8 @@
       return {
         loading: false,
         account: {
-          username: 'admin',
-          pwd: '123456'
+          username: 'tiantong88',
+          pwd: '000000'
         },
         rules: {
           username: [

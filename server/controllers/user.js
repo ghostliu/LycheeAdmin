@@ -3,9 +3,21 @@
  *
  * Created by llz.
  */
-const Users = require('../data/user');
+let crypto = require('crypto')
+let db = require('../utils/mydbUtils')
 let userController = {};
-let _Users = Users;
+let _Users = [];
+
+let insertOrUpdateSql = function(sql, params, callBack) {
+    db.insertOrUpdateSql(sql, params, function(err, rows, fields) {
+        if (err) {
+            console.log('[insert] -:' + err);
+            callBack(err);
+            return;
+        }
+        callBack(err, rows);
+    });
+}
 
 /**
  * 检查用户的登录状态
@@ -34,30 +46,37 @@ userController.login = function (req, res) {
   if (!username || !pwd) {
     return res.json({"errcode": 40002, "errmsg": "不合法的参数"});
   }
-
-  // 通过用户名获取到用户信息
-  let user = _.find(_Users, function (u) {
-    return u.username === username;
+  let checkUserSql = 'select userId as id,username, password, nickname, email from user where userName = ?'
+  insertOrUpdateSql(checkUserSql, [username], function(err, data) {
+    if (err == null) {
+      // 通过用户名获取到用户信息
+      let user = data[0];
+      console.log('---_Users----');
+      if (!user) {
+        return res.json({"errcode": 40003, "errmsg": "用户不存在"});
+      }
+      // 加密后的密码与库中密码对比
+      // 单纯md5对比不可靠，可适当在原有基础上添加相应额外字符
+      let md5 = crypto.createHash('md5')
+      let cryptoPwd = md5.update(pwd).digest('hex').toUpperCase();
+      
+      if (user.password === cryptoPwd) {
+        //设置session
+        req.session.userId = user.id;
+        return res.json({
+          id: user.id,
+          username: user.username,
+          nickname: user.nickname,
+          email: user.email
+        });
+      } else {
+        return res.json({"errcode": 40004, "errmsg": "密码错误"});
+      }
+    } else {
+        return res.json({ "errcode": 40009, "errmsg": "处理失败" });
+    }
   });
-  console.log('---_Users----');
-  console.log(_Users);
-  if (!user) {
-    return res.json({"errcode": 40003, "errmsg": "用户不存在"});
-  }
-  if (user.password === pwd) {
-    //设置session
-    req.session.userId = user.id;
 
-    return res.json({
-      id: user.id,
-      username: user.username,
-      nickname: user.nickname,
-      name: user.name,
-      email: user.email
-    });
-  } else {
-    return res.json({"errcode": 40004, "errmsg": "密码错误"});
-  }
 };
 
 /**
@@ -76,20 +95,23 @@ userController.logout = function (req, res) {
  * @param res
  */
 userController.profile = function (req, res) {
+  let userid = req.session.userId || '';
   let nickname = req.body.nickname;
   let email = req.body.email;
-  let name  = req.body.name;
-  let i = _.findIndex(_Users, function (u) {
-    return u.id === req.session.userId
-  })
-  if (i > -1) {
-    _Users[i].nickname = nickname;
-    _Users[i].email = email;
-    _Users[i].name = name;
-    res.json({"errcode": 0, "errmsg": "修改成功"});
-  } else {
-    res.json({"errcode": 40009, "errmsg": "处理失败"});
+  // let name  = req.body.name;
+  
+  if (!userid) {
+    return res.json({"errcode":4002,"errmsg":"不合法的参数"})
   }
+  let updateUser = 'update user set nickName = ?, email = ? where userId = ?'
+  insertOrUpdateSql(updateUser, [nickname,email,userid], function(err, data) {
+    if (err == null) {
+      res.json({"errcode": 0, "errmsg": "修改成功"});
+    } else {
+      res.json({"errcode": 40009, "errmsg": "处理失败"});
+    }
+  });
+
 };
 
 /**
@@ -98,27 +120,43 @@ userController.profile = function (req, res) {
  * @param res
  */
 userController.changepwd = function (req, res) {
+  let userid = req.session.userId;
   let oldPwd = req.body.oldPwd;
   let newPwd = req.body.newPwd;
   let confirmPwd = req.body.confirmPwd;
-  let i = _.findIndex(_Users, function(u) {
-    return u.id === req.session.userId
-  })
 
-  if (i > -1) {
-    if (_Users[i].password == oldPwd) {
-      if (newPwd == confirmPwd) {
-        _Users[i].password = newPwd;
-        res.json({"errcode":0,"errmsg":"修改成功"})
+  let checkUserSql = 'select password from user where userId = ?'
+  insertOrUpdateSql(checkUserSql, [userid], function(err, data) {
+    let user = data[0]
+    if (err == null) {
+      if (user) {
+        let md5 = crypto.createHash('md5')
+        let cryptoOldPwd = md5.update(oldPwd).digest('hex').toUpperCase();
+        if (user.password == cryptoOldPwd) {
+          if (newPwd == confirmPwd) {
+            let md5 = crypto.createHash('md5')
+            let cryptoNewPwd = md5.update(newPwd).digest('hex').toUpperCase();
+            let updateUser = 'update user set password = ? where userId = ?'
+            insertOrUpdateSql(updateUser, [cryptoNewPwd,userid], function(err, data) {
+              if (err == null) {
+                res.json({"errcode": 0, "errmsg": "修改成功"});
+              } else {
+                res.json({"errcode": 40009, "errmsg": "处理失败"});
+              }
+            }); 
+          } else {
+            res.json({"errcode":40007,"errmsg":"两次输入的密码不一致"});
+          }
+        } else {
+          res.json({"errcode":40008,"errmsg":"输入的旧密码不正确"});
+        }
       } else {
-        res.json({"errcode":40007,"errmsg":"两次输入的密码不一致"});
+        res.json({"errcode":40009,"errmsg":"用户不存在"});
       }
     } else {
-      res.json({"errcode":40008,"errmsg":"输入的旧密码不正确"});
+      res.json({"errcode": 40009, "errmsg": "处理失败"});
     }
-  } else {
-    res.json({"errcode":40009,"errmsg":"用户不存在"});
-  }
+  });
 
 };
 
@@ -133,21 +171,27 @@ userController.find = function (req, res) {
   let name = req.query.name || '';
   let total = 0;
   let rltUsers = [];
-  if (name.length > 0) {
-    let mockUsers = _Users.filter(user => {
-      return (user.username.indexOf(name) > -1 || user.nickname.indexOf(name) > -1 || user.name.indexOf(name) > -1)
+
+  let querySql = 'select userId,username, password, nickname, sex, email from user';
+  insertOrUpdateSql(querySql, null, function(err, data) {
+    _Users = data;
+    if (name.length > 0) {
+      let searchUsers = _Users.filter(user => {
+        return (user.username.indexOf(name) > -1 || user.nickname.indexOf(name) > -1)
+      });
+      total = searchUsers.length; //总条数             
+      rltUsers = searchUsers.filter((u, index) => index < limit * page && index >= limit * (page - 1))
+    } else {
+      total = _Users.length; //总条数
+      rltUsers = _Users.filter((u, index) => index < limit * page && index >= limit * (page - 1))
+    }
+    res.json({
+      total: total,
+      limit: limit,
+      users: rltUsers
     });
-    total = mockUsers.length; //总条数             
-    rltUsers = mockUsers.filter((u, index) => index < limit * page && index >= limit * (page - 1))
-  } else {
-    total = _Users.length; //总条数
-    rltUsers = _Users.filter((u, index) => index < limit * page && index >= limit * (page - 1))
-  }
-  res.json({
-    total: total,
-    limit: limit,
-    users: rltUsers
-  })
+  });
+
 };
 
 module.exports = userController;
