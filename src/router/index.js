@@ -30,6 +30,7 @@ let router = new Router({
       name: 'home',
       title:'产品列表',
       component: Index,
+      redirect: '/index',
       children:[{
         path:'index',
         title:'门户主页',
@@ -127,9 +128,6 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
   // console.log('to:' + to.path)
   //前台首页，产品页，关于页无需验证
-  if (to.path == "/") {
-    next({path: '/home/index'})
-  }
   if (to.path.startsWith('/home') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
     next()
   } else {

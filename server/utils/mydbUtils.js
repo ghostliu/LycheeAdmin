@@ -11,16 +11,16 @@ var querySql = function(sql, params, callback) {
     }
     // params format 
     // {id:123,name:'123'}
-    console.log('[connect sql before]-:', sql);
+    //console.log('[connect sql before]-:', sql);
     if (params != "" || params != null) {
         for (var item in params) {
             sql += " where "+ item + "='" +  params[item] + "' ";
         }
     }
-    console.log('[connect sql after]-:', sql);
+    //console.log('[connect sql after]-:', sql);
     pool.query(sql, function(err, rows, fields) {
         if (err) {
-            console.log(err);
+            //console.log(err);
             callback(err, null);
             return;
         };
@@ -33,5 +33,24 @@ var executeProcedure = function(procedure,params,callback) {
     
 }
 
+//数据插入
+var insertOrUpdateSql = function(sql, params, callback) {
+    if (!sql) {
+        callback();
+        return;
+    }
+
+    pool.query(sql, params, function(err, rows, fields) {
+        if (err) {
+            //console.log(err);
+            callback(err, null);
+            return;
+        };
+        console.log('[product insert success!]');
+        callback(null, rows, fields);
+    });
+}
+
 exports.config = config;
 exports.querySql = querySql;
+exports.insertOrUpdateSql = insertOrUpdateSql;

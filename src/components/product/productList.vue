@@ -98,7 +98,7 @@
               :limit="1"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload">
-                <img v-if="editForm.imagePath" :src="editForm.imagePath" class="avatar">
+                <img v-if="addForm.imagePath" :src="addForm.imagePath" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
@@ -173,6 +173,7 @@
         },
         addForm: {
           name: '',
+          imagePath: '',
           uploadauthor: '',
           uploadDate: '',
           description: ''
@@ -261,7 +262,7 @@
             let para = Object.assign({}, this.editForm);
             para.uploadDate = new Date(); //上传日期
             para.uploadauthor = this.uploadUser;//上传用户名
-            para.uploadDate = (!para.uploadDate || para.uploadDate == '') ? '' : util.formatDate.format(new Date(para.uploadDate), 'yyyy-MM-dd');
+            para.uploadDate = (!para.uploadDate || para.uploadDate == '') ? '' : util.formatDate.format(new Date(para.uploadDate), 'yyyy-MM-dd hh:mm:ss');
             API.update(para.id, para).then(function (result) {
               that.loading = false;
               if (result && parseInt(result.errcode) === 0) {
@@ -287,6 +288,7 @@
         this.addFormVisible = true;
         this.addForm = {
           name: '',
+          imagePath:'',
           uploadauthor: '',
           uploadDate: '',
           description: ''
@@ -301,7 +303,7 @@
             let para = Object.assign({}, this.addForm);
             para.uploadDate = new Date(); //上传日期
             para.uploadauthor = this.uploadUser;//上传用户名
-            para.uploadDate = (!para.uploadDate || para.uploadDate === '') ? '' : util.formatDate.format(new Date(para.uploadDate), 'yyyy-MM-dd');
+            para.uploadDate = (!para.uploadDate || para.uploadDate === '') ? '' : util.formatDate.format(new Date(para.uploadDate), 'yyyy-MM-dd hh:mm:ss');
             API.add(para).then(function (result) {
               that.loading = false;
               if (result && parseInt(result.errcode) === 0) {
@@ -310,7 +312,7 @@
                 that.addFormVisible = false;
                 that.search();
               } else {
-                that.$message.error({showClose: true, message: '修改失败', duration: 2000});
+                that.$message.error({showClose: true, message: '新增失败', duration: 2000});
               }
             }, function (err) {
               that.loading = false;
@@ -351,7 +353,6 @@
         });
       },
       handleAvatarSuccess(res, file) {//上传成功后回调
-        debugger;
         let imgUrl = file.url;
         let fileNamePath = res.substr(20);
         let fullPath = this.uploadFileServerPath + res.substr(20);
