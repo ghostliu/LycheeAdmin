@@ -4,7 +4,8 @@ var app = {
 	user:'tiantong',
 	password:'j7gc5rjd',
 	database:'javaidc_tiantong',
-	port:3306
+	port:3306,
+	connectionLimit:1000
 };
 
 module.exports = app;

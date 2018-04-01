@@ -14,7 +14,7 @@
                                 <router-link to="/home/index" tag="a">首页</router-link>
                             </li>
                             <li>
-                                <router-link to="/product/index" tag="a">产品</router-link>
+                                <router-link to="/products/index" tag="a">产品</router-link>
                             </li>
                             <li>
                                 <router-link to="/about/index" tag="a">关于</router-link>
@@ -34,7 +34,7 @@
                                     <router-link to="/home/index" tag="a">首页</router-link>
                                 </li>
                                 <li>
-                                    <router-link to="/product/index" tag="a">产品</router-link>
+                                    <router-link to="/products/index" tag="a">产品</router-link>
                                 </li>
                                 <li>
                                     <router-link to="/about/index" tag="a">关于</router-link>

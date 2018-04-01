@@ -5,6 +5,6 @@
  */
 export default {
   baseURL: 'http://localhost:3000',
-  // baseURL: '',
+  // baseURL: 'http://www.lizhi98.pub:3000',
   isDev: true
 }

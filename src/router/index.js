@@ -26,6 +26,16 @@ let router = new Router({
 // mode: 'history',
   routes: [
     {
+      path: '/',
+      name: 'home2',
+      title:'产品列表',
+      component: Index,
+      redirect: '/index',
+      children:[
+        {path:'index', title:'门户主页', component:Main}// 区分前台与后台,false为前台，true为后台
+      ]
+    },
+    {
       path: '/home',
       name: 'home',
       title:'产品列表',
@@ -36,12 +46,12 @@ let router = new Router({
       ]
     },
     {
-      path: '/product',
+      path: '/products',
       name: 'product',
       title:'产品列表',
       component: Index,
       children:[
-        {path:'index', title:'产品列表', name:'product_name', component:Product }
+        {path:'index', title:'产品列表', name:'product_name', component:Product}
       ]
     },
     {
@@ -49,7 +59,7 @@ let router = new Router({
       name: 'about',
       component: Index,
       children:[
-        {path:'index', title:'关于', name:'about_index', component:About }
+        {path:'index', title:'关于', name:'about_index', component:About}
       ]
     },
     {
@@ -119,7 +129,7 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
   // console.log('to:' + to.path)
   //前台首页，产品页，关于页无需验证
-  if (to.path.startsWith('/home') || to.path.startsWith('/product') || to.path.startsWith('/about') ) {
+  if (to.path.startsWith('/index') || to.path.startsWith('/home') || to.path.startsWith('/products') || to.path.startsWith('/about')) {
     next()
   } else {
     if (to.path.startsWith('/login')) {
@@ -127,6 +137,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       let user = JSON.parse(window.localStorage.getItem('access-user'))
+      // 在访问后台时并且无登录信息才中转至登录页
       if (!user) {
         next({path: '/login'})
       } else {

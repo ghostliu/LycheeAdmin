@@ -40,16 +40,25 @@ var insertOrUpdateSql = function(sql, params, callback) {
         callback();
         return;
     }
-
-    pool.query(sql, params, function(err, rows, fields) {
+    pool.getConnection(function(err,connection){
         if (err) {
-            //console.log(err);
-            callback(err, null);
-            return;
-        };
-        console.log('[insertorupdate sql operation success!]');
-        callback(null, rows, fields);
+            callback(err,null)
+            console.log('创建数据库连接失败.')
+            return ;
+        }
+
+        connection.query(sql, params, function(err, rows, fields) {
+            if (err) {
+                console.log(err);
+                callback(err, null);
+                return;
+            };
+            console.log('[insertorupdate sql operation success!]');
+            connection.release();
+            callback(null, rows, fields);
+        });
     });
+    
 }
 
 exports.config = config;
