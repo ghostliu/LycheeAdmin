@@ -1,24 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
-import Dashboard from '@/components/Dashboard'
-
-import BookList from '@/components/book/list'
-import BookCategoryList from '@/components/bookcategory/list'
-
-import ProductList from '@/components/product/productList'
-
-import UserList from '@/components/user/list'
-import UserChangePwd from '@/components/user/changepwd'
-import UserProfile from '@/components/user/profile'
 
 import Index from '@/components/frontPage/index'
-import Main from '@/components/frontPage/main'
-import Product from '@/components/frontPage/product'
-import About from '@/components/frontPage/about'
-
-// 懒加载方式，当路由被访问的时候才加载对应组件
-const Login = resolve => require(['@/components/Login'], resolve)
+import Home from '@/components/Home'
 
 Vue.use(Router)
 
@@ -28,22 +12,41 @@ let router = new Router({
     {
       path: '/',
       name: 'home2',
-      title:'产品列表',
+      title:'首页',
       component: Index,
       redirect: '/index',
       children:[
-        {path:'index', title:'门户主页', component:Main}// 区分前台与后台,false为前台，true为后台
-      ]
+        {
+          path:'index', 
+          name:'home_index2', 
+          meta:{
+            title: '江阴天通铝业 - 首页',
+            requiresAuth: false // 区分前台与后台,是否需要验证
+          }, 
+          component: resolve => {
+            // 懒加载方式，当路由被访问的时候才加载对应组件
+            require(['@/components/frontPage/main'], resolve)
+          }
+        }]
     },
     {
       path: '/home',
       name: 'home',
-      title:'产品列表',
+      title:'首页',
       component: Index,
       redirect: '/index',
       children:[
-        {path:'index', title:'门户主页', name:'home_index', component:Main}
-      ]
+        {
+          path:'index',  
+          name:'home_index', 
+          meta:{
+            title: '江阴天通铝业 - 首页',
+            requiresAuth: false // 区分前台与后台,是否需要验证
+          }, 
+          component: resolve => {
+            require(['@/components/frontPage/main'], resolve)
+          }
+        }]
     },
     {
       path: '/products',
@@ -51,33 +54,66 @@ let router = new Router({
       title:'产品列表',
       component: Index,
       children:[
-        {path:'index', title:'产品列表', name:'product_name', component:Product}
-      ]
+        {
+          path:'index',  
+          name:'product_index', 
+          meta:{
+            title: '江阴天通铝业 - 产品列表',
+            requiresAuth: false // 区分前台与后台,是否需要验证
+          }, 
+          component: resolve => {
+            require(['@/components/frontPage/Product'], resolve)
+          }
+        }]
     },
     {
       path: '/about',
       name: 'about',
       component: Index,
       children:[
-        {path:'index', title:'关于', name:'about_index', component:About}
-      ]
+        {
+          path:'index',  
+          name:'about_index', 
+          meta:{
+            title: '江阴天通铝业 - 关于',
+            requiresAuth: false // 区分前台与后台,是否需要验证
+          }, 
+          component: resolve => {
+            require(['@/components/frontPage/about'], resolve)
+          }
+        }]
     },
     {
       path: '/login',
-      name: '登录',
-      component: Login
+      title:'登录',
+      name: 'login',
+      meta: {
+        title:'江阴天通铝业后台管理 - Login'
+      },
+      component: resolve => {
+        require(['@/components/Login'], resolve)
+      }
     },
     {
       path: '/manage',
-      name: 'back_home',
+      name: 'manage',
       component: Home,
       redirect: '/dashboard',
       leaf: true, // 只有一个节点
       menuShow: true, // 菜单是否显示
       iconCls: 'iconfont icon-home', // 图标样式class
       children: [
-        {path: '/dashboard', component: Dashboard, name: '后台首页', menuShow: true}
-      ]
+        {
+          path: '/dashboard', 
+          name: 'Dashboard',
+          meta: {
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/Dashboard'], resolve)
+          }
+        }]
     },
     {
       path: '/manage',
@@ -87,19 +123,49 @@ let router = new Router({
       leaf: true, // 只有一个节点
       iconCls: 'iconfont icon-users', // 图标样式class
       children: [
-        {path: '/user/list', component: UserList, name: '用户列表', menuShow: true}
-      ]
+        {
+          path: '/user/list', 
+          name: '用户列表', 
+          meta: {
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/user/list'], resolve)
+          }
+        }]
     },
     {
       path: '/manage',
       component: Home,
-      name: '图书管理',
+      name: 'book_manage',
       menuShow: false, 
       iconCls: 'iconfont icon-books',
       children: [
-        {path: '/book/list', component: BookList, name: '图书列表', menuShow: true},
-        {path: '/book/category', component: BookCategoryList, name: '图书分类', menuShow: true}
-      ]
+        {
+          path: '/book/list', 
+          name: 'book_list', 
+          meta: {
+            title:'江阴天通铝业后台管理',
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/book/list'], resolve)
+          }
+        },
+        {
+          path: '/book/category', 
+          name: 'book_category', 
+          meta: {
+            title:'江阴天通铝业后台管理',
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/bookcategory/list'], resolve)
+          }
+        }]
     },
     {
       path: '/manage',
@@ -108,9 +174,17 @@ let router = new Router({
       menuShow: true,
       iconCls: 'iconfont icon-books',
       children: [
-        {path: '/product/productList', component: ProductList, name: '产品列表', menuShow: true},
-        {path: '/book/category', component: BookCategoryList, name: '产品分类', menuShow: true}
-      ]
+        {
+          path: '/product/productList', 
+          name: '产品列表', 
+          meta: {
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/product/productList'], resolve)
+          }
+        }]
     },
     {
       path: '/manage',
@@ -119,20 +193,39 @@ let router = new Router({
       menuShow: true,
       iconCls: 'iconfont icon-setting1',
       children: [
-        {path: '/user/profile', component: UserProfile, name: '个人信息', menuShow: true},
-        {path: '/user/changepwd', component: UserChangePwd, name: '修改密码', menuShow: true}
-      ]
-    }
-  ]
+        {
+          path: '/user/profile', 
+          name: '个人信息', 
+          meta: {
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/user/profile'], resolve)
+          }
+        },
+        {
+          path: '/user/changepwd', 
+          name: '修改密码', 
+          meta: {
+            requiresAuth: true
+          },
+          menuShow: true,
+          component: resolve => {
+            require(['@/components/user/changepwd'], resolve)
+          }
+        }]
+
+    }]
 })
 
 router.beforeEach((to, from, next) => {
-  // console.log('to:' + to.path)
+  //console.log('to:' + to.meta.requiresAuth)
   //前台首页，产品页，关于页无需验证
-  if (to.path.startsWith('/index') || to.path.startsWith('/home') || to.path.startsWith('/products') || to.path.startsWith('/about')) {
+  if (!to.meta.requiresAuth) {
     next()
   } else {
-    if (to.path.startsWith('/login')) {
+    if (to.name === 'login') {
       window.localStorage.removeItem('access-user')
       next()
     } else {
