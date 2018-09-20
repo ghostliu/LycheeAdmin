@@ -356,9 +356,12 @@
         let imgUrl = file.url;
         let fileNamePath = res.substr(20);
         let fullPath = this.uploadFileServerPath + res.substr(20);
-        //http://www.lizhi98.pub:8099/UploadFile/201803211618087164.jpg
         //this.editForm.imagePath = URL.createObjectURL(file.raw);
-        this.editForm.imagePath = fullPath;
+        if (this.addFormVisible) {
+          this.addForm.imagePath = fullPath;
+        } else {
+          this.editForm.imagePath = fullPath;  
+        }
       },
       beforeAvatarUpload(file) { //图片上传限制条件
         const isJPG = file.type === 'image/jpeg';
