@@ -28,7 +28,7 @@
     <el-row type="flex">
       <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(0,5)" :key="o.id" :offset="index > 0 ? 1 : 0">
          <el-card :body-style="{ padding: '0px' }">
-            <img :src="staticPath + o.imagePath" class="product_image">
+            <img :src="o.imagePath | imagePathShow" class="product_image">
             <div style="padding: 14px;">
               <span>{{ o.name }}</span>
               <div class="bottom clearfix">
@@ -41,7 +41,7 @@
     <el-row type="flex">
       <el-col class="product_list" :span="4" v-for="(o, index) in products.slice(5,10)" :key="o.id" :offset="index > 0 ? 1 : 0">
          <el-card :body-style="{ padding: '0px' }">
-            <img :src="staticPath + o.imagePath" class="product_image">
+            <img :src="o.imagePath | imagePathShow" class="product_image">
             <div style="padding: 14px;">
               <span>{{ o.name }}</span>
               <div class="bottom clearfix">
@@ -159,6 +159,15 @@
       mounted() {
         this.getProduct();
         console.log("产品获取时间"+moment(new Date()).format('YYYY-MM-DD HH:mm:ss a'))
+      },
+      filters:{
+        imagePathShow(path) {
+          if (path.indexOf('UploadFile') > -1) {
+            return path;
+          } else {
+            return '../../static/' + path;
+          }
+        }
       }
   }
 </script>
