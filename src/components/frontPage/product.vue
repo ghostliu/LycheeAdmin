@@ -9,7 +9,7 @@
         <el-row type="flex" v-for="(row, rindex) in rowCount" :key="row" style="padding-bottom: 15px">
             <el-col :span="4" v-for="(o, index) in products.slice(rindex*5,5*(rindex+1))" :key="o.id" :offset="index > 0 ? 1 : 0">
                 <el-card :body-style="{ padding: '0px' }">
-                    <img :src="staticPath + o.imagePath" class="product_image">
+                    <img :src="o.imagePath | imagePathShow" class="product_image">
                     <div style="padding: 14px;">
                         <span>{{ o.name }}</span>
                         <div class="bottom clearfix">
@@ -73,7 +73,16 @@
     mounted() {
       //获取产品列表数据
       this.getProduct();
-    }
+    },
+    filters:{
+        imagePathShow(path) {
+          if (path.indexOf('UploadFile') > -1) {
+            return path;
+          } else {
+            return '../../static/' + path;
+          }
+        }
+      }
 }
 </script>
 <style scoped>
